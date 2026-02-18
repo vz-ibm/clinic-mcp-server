@@ -144,7 +144,7 @@ def http_server(tmp_path: Path):
 @pytest.fixture
 def http_session(http_server, demo_jwt_token):
     @asynccontextmanager
-    async def _session() -> AsyncGenerator[ClientSession, None]:
+    async def _session() -> AsyncGenerator[ClientSession]:
         async with httpx.AsyncClient(
             headers={"Authorization": f"Bearer {demo_jwt_token}"},
             timeout=10.0,
@@ -192,7 +192,7 @@ def sse_server(tmp_path: Path):
 @pytest.fixture
 def sse_session(sse_server):
     @asynccontextmanager
-    async def _session() -> AsyncGenerator[ClientSession, None]:
+    async def _session() -> AsyncGenerator[ClientSession]:
         async with sse_client(f"{sse_server}/sse") as (read, write):
             async with ClientSession(read, write) as session:
                 await session.initialize()

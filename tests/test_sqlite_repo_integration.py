@@ -1,8 +1,13 @@
 import sqlite3
+
 import pytest
 
 from clinic_mcp_server.domain.enums import MembershipType
-from clinic_mcp_server.domain.errors import ConflictError, NotFoundError, ValidationError
+from clinic_mcp_server.domain.errors import (
+    ConflictError,
+    NotFoundError,
+    ValidationError,
+)
 from clinic_mcp_server.infra.sqlite_repo import SQLiteClinicRepository
 from clinic_mcp_server.services.clinic_service import ClinicService
 
@@ -53,7 +58,7 @@ def _register_user(svc: ClinicService, ssn: int, first="A", last="B", amount=10.
 
 def test_db_initializes_and_seeds(repo, db_path):
     # touch repo by calling something
-    srv = ClinicService(repo)
+    # srv = ClinicService(repo)
     specs = ClinicService(repo).list_specialties()
     assert specs, "expected seeded specialties"
 

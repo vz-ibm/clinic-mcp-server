@@ -1,11 +1,11 @@
 import os
 import sqlite3
-from datetime import datetime, timedelta, date
-from typing import List, Optional, Literal
+from datetime import date, datetime, timedelta
+
 from pydantic import BaseModel, Field
-from datetime import datetime, date
 
 from clinic_mcp_server.domain.enums import MembershipType
+
 
 class User(BaseModel):
     user_id: str
@@ -33,7 +33,7 @@ class DoctorSearchResult(BaseModel):
     specialty: str = Field(..., description="Medical specialty.")
     rating: float = Field(..., description="Average patient rating.")
     visit_fee: float = Field(..., description="Consultation fee.")
-    next_available_appointment: Optional[str] = Field(
+    next_available_appointment: str | None = Field(
         None, description="Next available appointment date and time, or None if unavailable."
     )
 
@@ -232,7 +232,7 @@ class ClinicDB:
                     (dr_id, weekday, start_time, end_time),
                 )
 
-    def add_slots(self, days_range: int = 30, from_date: Optional[date] = None):
+    def add_slots(self, days_range: int = 30, from_date: date | None = None):
         if from_date is None:
             from_date = datetime.today().date()
 
@@ -303,7 +303,7 @@ class ClinicDB:
         self.conn.commit()
         return self._require_lastrowid()
 
-    def bill_user(self, pay_id: int, amount: float, slot_id: Optional[int] = None) -> int:
+    def bill_user(self, pay_id: int, amount: float, slot_id: int | None = None) -> int:
         now = datetime.now().isoformat(timespec="seconds")
         if slot_id is None:
             self.cursor.execute(
@@ -365,7 +365,7 @@ class ClinicDB:
         """, (int(slot_id),))
         self.conn.commit()
 
-    def get_available_dr_specialties(self) -> List[str]:
+    def get_available_dr_specialties(self) -> list[str]:
         self.cursor.execute("""
             SELECT DISTINCT specialty
             FROM doctors
@@ -376,10 +376,10 @@ class ClinicDB:
 
     def search_doctors(
         self,
-        specialty: Optional[str] = None,
-        min_rank: Optional[float] = None,
-        max_fee: Optional[float] = None,
-    ) -> List[DoctorSearchResult]:
+        specialty: str | None = None,
+        min_rank: float | None = None,
+        max_fee: float | None = None,
+    ) -> list[DoctorSearchResult]:
         query = """
             SELECT
                 d.dr_id,
@@ -397,7 +397,7 @@ class ClinicDB:
             FROM doctors d
             WHERE 1=1
         """
-        params: List[object] = []
+        params: list[object] = []
 
         if specialty:
             query += " AND d.specialty = ?"
@@ -416,7 +416,7 @@ class ClinicDB:
         self.cursor.execute(query, params)
         rows = self.cursor.fetchall()
 
-        out: List[DoctorSearchResult] = []
+        out: list[DoctorSearchResult] = []
         for r in rows:
             out.append(
                 DoctorSearchResult(
@@ -433,10 +433,10 @@ class ClinicDB:
     def search_available_appointments(
         self,
         specialty: str,
-        doctor_name: Optional[str] = None,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-    ) -> List[AppointmentSlot]:
+        doctor_name: str | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+    ) -> list[AppointmentSlot]:
         base_query = """
             SELECT
                 s.slot_id,
@@ -453,7 +453,7 @@ class ClinicDB:
               AND s.user_id IS NULL
               AND date(s.date) >= date('now')
         """
-        params: List[object] = [specialty]
+        params: list[object] = [specialty]
 
         if doctor_name:
             base_query += " AND d.dr_name LIKE ?"
@@ -486,7 +486,7 @@ class ClinicDB:
             for r in rows
         ]
 
-    def get_user_payment_methods(self, user_id: int) -> List[PaymentMethod]:
+    def get_user_payment_methods(self, user_id: int) -> list[PaymentMethod]:
         self.cursor.execute("""
             SELECT pay_id, card_last_4, card_brand, card_exp, card_id
             FROM payment_methods
@@ -547,7 +547,7 @@ class ClinicDB:
             membership_type=MembershipType(r[8]),
         )
 
-    def get_user_appointments(self, user_id: int) -> List[AppointmentSlot]:
+    def get_user_appointments(self, user_id: int) -> list[AppointmentSlot]:
         self.cursor.execute("""
             SELECT
                 s.slot_id,
@@ -578,7 +578,7 @@ class ClinicDB:
             for r in rows
         ]
 
-    def get_appointment_slot(self, slot_id: int) -> Optional[AppointmentSlot]:
+    def get_appointment_slot(self, slot_id: int) -> AppointmentSlot | None:
         self.cursor.execute("""
             SELECT
                 s.slot_id,

@@ -1,4 +1,3 @@
-import os
 
 from clinic_mcp_server.runtime.settings import ServerSettings
 

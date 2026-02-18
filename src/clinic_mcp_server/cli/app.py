@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from pathlib import Path
 
 import typer
@@ -47,7 +48,6 @@ def run(
     if transport not in {"stdio", "sse", "streamable-http"}:
         raise typer.BadParameter("transport must be one of: stdio | sse | streamable-http")
 
-    from clinic_mcp_server.tools.clinic_server import mcp as clinic_mcp
 
     settings = ServerSettings.load(transport=transport, host=host, port=port)
     McpRunner(clinic_mcp).run(settings)

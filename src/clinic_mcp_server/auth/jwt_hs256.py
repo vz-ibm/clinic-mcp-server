@@ -5,7 +5,7 @@ import hashlib
 import hmac
 import json
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class JwtHS256:
@@ -14,7 +14,7 @@ class JwtHS256:
     Good for demos. For production use PyJWT + key rotation.
     """
 
-    def __init__(self, secret: str, audience: Optional[str] = None, issuer: Optional[str] = None):
+    def __init__(self, secret: str, audience: str | None = None, issuer: str | None = None):
         self.secret = secret
         self.audience = audience
         self.issuer = issuer
@@ -35,7 +35,7 @@ class JwtHS256:
     def generate_demo_token(self, valid_seconds: int = 24 * 3600) -> str:
         header = {"alg": "HS256", "typ": "JWT"}
         now = int(time.time())
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "sub": "demo-user",
             "role": "demo",
             "iat": now,
@@ -52,7 +52,7 @@ class JwtHS256:
         sig_b64 = self._sign(signing_input)
         return f"{header_b64}.{payload_b64}.{sig_b64}"
 
-    def verify(self, token: str, leeway_seconds: int = 30) -> Dict[str, Any]:
+    def verify(self, token: str, leeway_seconds: int = 30) -> dict[str, Any]:
         parts = token.split(".")
         if len(parts) != 3:
             raise ValueError("Invalid JWT format")

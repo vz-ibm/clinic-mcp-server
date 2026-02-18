@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import pytest
-from mcp import ClientSession
-from mcp.client.streamable_http import streamable_http_client
 
 
 @pytest.mark.asyncio

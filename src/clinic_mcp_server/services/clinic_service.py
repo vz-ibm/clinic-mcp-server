@@ -1,14 +1,19 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import List, Optional
 
 from clinic_mcp_server.domain.enums import MembershipType
 from clinic_mcp_server.domain.errors import ValidationError
 from clinic_mcp_server.domain.interfaces import ClinicRepository
-from clinic_mcp_server.model.clinic_db import AppointmentSlot, DoctorSearchResult, PaymentMethod, User
+from clinic_mcp_server.model.clinic_db import (
+    AppointmentSlot,
+    DoctorSearchResult,
+    PaymentMethod,
+    User,
+)
 
 
-def _validate_date(d: Optional[str], name: str) -> Optional[str]:
+def _validate_date(d: str | None, name: str) -> str | None:
     if d is None:
         return None
     if len(d) != 10 or d[4] != "-" or d[7] != "-":
@@ -66,25 +71,25 @@ class ClinicService:
     def add_payment_method(self, user_id: int, card_last_4: int, card_brand: str, card_exp: str, card_id: str) -> int:
         return self.repo.add_payment_method(user_id, card_last_4, card_brand, card_exp, card_id)
 
-    def get_user_payment_methods(self, user_id: int) -> List[PaymentMethod]:
+    def get_user_payment_methods(self, user_id: int) -> list[PaymentMethod]:
         return self.repo.get_user_payment_methods(user_id)
 
-    def list_specialties(self) -> List[str]:
+    def list_specialties(self) -> list[str]:
         return self.repo.get_available_dr_specialties()
 
     def search_doctors(
-        self, specialty: Optional[str] = None, min_rank: Optional[float] = None, max_fee: Optional[float] = None
-    ) -> List[DoctorSearchResult]:
+        self, specialty: str | None = None, min_rank: float | None = None, max_fee: float | None = None
+    ) -> list[DoctorSearchResult]:
         return self.repo.search_doctors(specialty, min_rank, max_fee)
 
     def search_appointments(
-        self, specialty: str, doctor_name: Optional[str] = None, start_date: Optional[str] = None, end_date: Optional[str] = None
-    ) -> List[AppointmentSlot]:
+        self, specialty: str, doctor_name: str | None = None, start_date: str | None = None, end_date: str | None = None
+    ) -> list[AppointmentSlot]:
         start_date = _validate_date(start_date, "start_date")
         end_date = _validate_date(end_date, "end_date")
         return self.repo.search_available_appointments(specialty, doctor_name, start_date, end_date)
 
-    def get_slot(self, slot_id: int) -> Optional[AppointmentSlot]:
+    def get_slot(self, slot_id: int) -> AppointmentSlot | None:
         return self.repo.get_appointment_slot(slot_id)
 
     def schedule_appointment(self, user_id: int, pay_id: int, slot_id: int, payment_amount: float) -> int:
@@ -95,7 +100,7 @@ class ClinicService:
     def cancel_appointment(self, slot_id: int) -> None:
         self.repo.remove_appointment(slot_id)
 
-    def get_user_appointments(self, user_id: int) -> List[AppointmentSlot]:
+    def get_user_appointments(self, user_id: int) -> list[AppointmentSlot]:
         return self.repo.get_user_appointments(user_id)
 
     def get_user_id(self, ssn: int) -> int:

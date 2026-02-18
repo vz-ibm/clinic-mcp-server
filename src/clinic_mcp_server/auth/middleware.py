@@ -1,7 +1,7 @@
 # src/clinic_mcp_server/auth/middleware.py
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from clinic_mcp_server.auth.jwt_hs256 import JwtHS256
 

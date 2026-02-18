@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+
 @pytest.mark.asyncio
 async def test_sse_connection_and_tool_call(sse_session):
     async with sse_session as session:

@@ -1,10 +1,14 @@
 from __future__ import annotations
+
 import os
 from pathlib import Path
-from typing import List, Literal, Optional
 
 from clinic_mcp_server.domain.enums import MembershipType
-from clinic_mcp_server.domain.errors import ConflictError, NotFoundError, ValidationError
+from clinic_mcp_server.domain.errors import (
+    ConflictError,
+    NotFoundError,
+    ValidationError,
+)
 from clinic_mcp_server.domain.interfaces import ClinicRepository
 from clinic_mcp_server.model.clinic_db import (
     AppointmentSlot,
@@ -97,36 +101,36 @@ class SQLiteClinicRepository(ClinicRepository):
         with self._db() as db:
             return db.add_payment_method(user_id, card_last_4, card_brand, card_exp, card_id)
 
-    def get_user_payment_methods(self, user_id: int) -> List[PaymentMethod]:
+    def get_user_payment_methods(self, user_id: int) -> list[PaymentMethod]:
         with self._db() as db:
             return db.get_user_payment_methods(user_id)
 
-    def bill_user(self, pay_id: int, amount: float, slot_id: Optional[int] = None) -> int:
+    def bill_user(self, pay_id: int, amount: float, slot_id: int | None = None) -> int:
         with self._db() as db:
             return db.bill_user(pay_id, amount, slot_id)
 
     # ---- Doctors & slots ----
-    def get_available_dr_specialties(self) -> List[str]:
+    def get_available_dr_specialties(self) -> list[str]:
         with self._db() as db:
             return db.get_available_dr_specialties()
 
     def search_doctors(
-        self, specialty: Optional[str] = None, min_rank: Optional[float] = None, max_fee: Optional[float] = None
-    ) -> List[DoctorSearchResult]:
+        self, specialty: str | None = None, min_rank: float | None = None, max_fee: float | None = None
+    ) -> list[DoctorSearchResult]:
         with self._db() as db:
             return db.search_doctors(specialty, min_rank, max_fee)
 
     def search_available_appointments(
         self,
         specialty: str,
-        doctor_name: Optional[str] = None,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-    ) -> List[AppointmentSlot]:
+        doctor_name: str | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+    ) -> list[AppointmentSlot]:
         with self._db() as db:
             return db.search_available_appointments(specialty, doctor_name, start_date, end_date)
 
-    def get_appointment_slot(self, slot_id: int) -> Optional[AppointmentSlot]:
+    def get_appointment_slot(self, slot_id: int) -> AppointmentSlot | None:
         with self._db() as db:
             return db.get_appointment_slot(slot_id)
 
@@ -142,6 +146,6 @@ class SQLiteClinicRepository(ClinicRepository):
         with self._db() as db:
             db.remove_appointment(slot_id)
 
-    def get_user_appointments(self, user_id: int) -> List[AppointmentSlot]:
+    def get_user_appointments(self, user_id: int) -> list[AppointmentSlot]:
         with self._db() as db:
             return db.get_user_appointments(user_id)

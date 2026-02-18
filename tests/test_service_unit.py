@@ -1,11 +1,20 @@
-import pytest
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+
+import pytest
 
 from clinic_mcp_server.domain.enums import MembershipType
-from clinic_mcp_server.domain.errors import ConflictError, NotFoundError, ValidationError
+from clinic_mcp_server.domain.errors import (
+    ConflictError,
+    NotFoundError,
+    ValidationError,
+)
 from clinic_mcp_server.domain.interfaces import ClinicRepository
-from clinic_mcp_server.model.clinic_db import AppointmentSlot, DoctorSearchResult, PaymentMethod, User
+from clinic_mcp_server.model.clinic_db import (
+    AppointmentSlot,
+    DoctorSearchResult,
+    PaymentMethod,
+    User,
+)
 from clinic_mcp_server.services.clinic_service import ClinicService
 
 
@@ -13,7 +22,7 @@ from clinic_mcp_server.services.clinic_service import ClinicService
 class BillCall:
     pay_id: int
     amount: float
-    slot_id: Optional[int]
+    slot_id: int | None
 
 
 class FakeRepo(ClinicRepository):
@@ -25,29 +34,29 @@ class FakeRepo(ClinicRepository):
     """
 
     def __init__(self):
-        self.users: Dict[int, User] = {}
-        self.user_by_ssn: Dict[int, int] = {}
-        self.payment: Dict[int, List[PaymentMethod]] = {}
+        self.users: dict[int, User] = {}
+        self.user_by_ssn: dict[int, int] = {}
+        self.payment: dict[int, list[PaymentMethod]] = {}
         self._uid = 0
         self._pid = 0
         self._bill_id = 0
 
-        self.bill_calls: List[BillCall] = []
+        self.bill_calls: list[BillCall] = []
 
         # doctors (minimal)
-        self.doctors: List[DoctorSearchResult] = [
+        self.doctors: list[DoctorSearchResult] = [
             DoctorSearchResult(dr_id=1, dr_name="Dr Alice", specialty="family", rating=4.7, visit_fee=100.0, next_available_appointment=None),
             DoctorSearchResult(dr_id=2, dr_name="Dr Bob", specialty="family", rating=4.2, visit_fee=150.0, next_available_appointment=None),
             DoctorSearchResult(dr_id=3, dr_name="Dr Carol", specialty="dermatology", rating=4.9, visit_fee=200.0, next_available_appointment=None),
         ]
 
         # slots
-        self.slots: Dict[int, AppointmentSlot] = {
+        self.slots: dict[int, AppointmentSlot] = {
             1: AppointmentSlot(slot_id=1, dr_name="Dr Alice", specialty="family", date="2030-01-01", start_time="09:00", end_time="09:30", visit_fee=100.0, rating=4.7),
             2: AppointmentSlot(slot_id=2, dr_name="Dr Bob", specialty="family", date="2030-01-02", start_time="10:00", end_time="10:30", visit_fee=150.0, rating=4.2),
             3: AppointmentSlot(slot_id=3, dr_name="Dr Carol", specialty="dermatology", date="2030-01-03", start_time="11:00", end_time="11:30", visit_fee=200.0, rating=4.9),
         }
-        self.slot_user: Dict[int, Optional[int]] = {1: None, 2: None, 3: None}
+        self.slot_user: dict[int, int | None] = {1: None, 2: None, 3: None}
 
     # ---- Users ----
     def add_user(self, social_security_number:int, first_name:str, last_name:str, address:str, email:str, phone_number:str, membership_type:MembershipType) -> int:
@@ -86,19 +95,19 @@ class FakeRepo(ClinicRepository):
         self.payment.setdefault(user_id, []).append(pm)
         return self._pid
 
-    def get_user_payment_methods(self, user_id: int) -> List[PaymentMethod]:
+    def get_user_payment_methods(self, user_id: int) -> list[PaymentMethod]:
         return list(self.payment.get(user_id, []))
 
-    def bill_user(self, pay_id: int, amount: float, slot_id: Optional[int] = None) -> int:
+    def bill_user(self, pay_id: int, amount: float, slot_id: int | None = None) -> int:
         self._bill_id += 1
         self.bill_calls.append(BillCall(pay_id=pay_id, amount=amount, slot_id=slot_id))
         return self._bill_id
 
     # ---- Doctors & slots ----
-    def get_available_dr_specialties(self) -> List[str]:
+    def get_available_dr_specialties(self) -> list[str]:
         return sorted({d.specialty for d in self.doctors})
 
-    def search_doctors(self, specialty=None, min_rank=None, max_fee=None) -> List[DoctorSearchResult]:
+    def search_doctors(self, specialty=None, min_rank=None, max_fee=None) -> list[DoctorSearchResult]:
         out = self.doctors
         if specialty:
             out = [d for d in out if d.specialty == specialty]
@@ -110,7 +119,7 @@ class FakeRepo(ClinicRepository):
         out = sorted(out, key=lambda d: d.rating, reverse=True)
         return out
 
-    def search_available_appointments(self, specialty, doctor_name=None, start_date=None, end_date=None) -> List[AppointmentSlot]:
+    def search_available_appointments(self, specialty, doctor_name=None, start_date=None, end_date=None) -> list[AppointmentSlot]:
         def ok_date(s: AppointmentSlot) -> bool:
             if start_date and s.date < start_date:
                 return False
@@ -129,7 +138,7 @@ class FakeRepo(ClinicRepository):
         out.sort(key=lambda s: (s.date, s.start_time))
         return out[:10]
 
-    def get_appointment_slot(self, slot_id: int) -> Optional[AppointmentSlot]:
+    def get_appointment_slot(self, slot_id: int) -> AppointmentSlot | None:
         return self.slots.get(slot_id)
 
     def add_appointment(self, user_id: int, slot_id: int) -> int:
@@ -145,14 +154,14 @@ class FakeRepo(ClinicRepository):
         if slot_id in self.slot_user:
             self.slot_user[slot_id] = None
 
-    def get_user_appointments(self, user_id: int) -> List[AppointmentSlot]:
+    def get_user_appointments(self, user_id: int) -> list[AppointmentSlot]:
         out = [self.slots[sid] for sid, uid in self.slot_user.items() if uid == user_id]
         out.sort(key=lambda s: (s.date, s.start_time))
         return out
 
 
 @pytest.fixture()
-def service_and_repo() -> Tuple[ClinicService, FakeRepo]:
+def service_and_repo() -> tuple[ClinicService, FakeRepo]:
     repo = FakeRepo()
     svc = ClinicService(repo)
     return svc, repo

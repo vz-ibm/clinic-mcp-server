@@ -4,8 +4,9 @@ import argparse
 import asyncio
 import json
 import os
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import Any, AsyncGenerator, Dict, Optional
+from typing import Any
 
 import httpx
 import yaml
@@ -13,7 +14,6 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.sse import sse_client
 from mcp.client.stdio import stdio_client
 from mcp.client.streamable_http import streamable_http_client
-
 
 # ---------------------------
 # Helpers: pretty printing
@@ -89,7 +89,7 @@ def require_int(x: Any, label: str) -> int:
 # ---------------------------
 
 @asynccontextmanager
-async def session_stdio() -> AsyncGenerator[ClientSession, None]:
+async def session_stdio() -> AsyncGenerator[ClientSession]:
     params = StdioServerParameters(
         command="uv",
         args=["run", "python", "-m", "clinic_mcp_server.main", "--transport", "stdio"],
@@ -101,7 +101,7 @@ async def session_stdio() -> AsyncGenerator[ClientSession, None]:
 
 
 @asynccontextmanager
-async def session_http(url: str, token: str) -> AsyncGenerator[ClientSession, None]:
+async def session_http(url: str, token: str) -> AsyncGenerator[ClientSession]:
     async with httpx.AsyncClient(
         headers={"Authorization": f"Bearer {token}"},
         timeout=10.0,
@@ -113,7 +113,7 @@ async def session_http(url: str, token: str) -> AsyncGenerator[ClientSession, No
 
 
 @asynccontextmanager
-async def session_sse(url: str) -> AsyncGenerator[ClientSession, None]:
+async def session_sse(url: str) -> AsyncGenerator[ClientSession]:
     # SSE demo has no JWT in your design
     async with sse_client(url) as (read, write):
         async with ClientSession(read, write) as session:
@@ -125,7 +125,7 @@ async def session_sse(url: str) -> AsyncGenerator[ClientSession, None]:
 # Scenario runner
 # ---------------------------
 
-async def run_scenario(cfg: Dict[str, Any]) -> None:
+async def run_scenario(cfg: dict[str, Any]) -> None:
     server = cfg.get("server", {})
     transport = server.get("transport", "streamable-http")
     http_url = server.get("http_url", "http://127.0.0.1:8080/mcp")
@@ -344,7 +344,7 @@ def main() -> None:
     )
     args = ap.parse_args()
 
-    with open(args.config, "r", encoding="utf-8") as f:
+    with open(args.config, encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
 
     asyncio.run(run_scenario(cfg))
