@@ -1,0 +1,55 @@
+server:
+  transport: streamable-http  # streamable-http | sse | stdio
+  http_url: "http://127.0.0.1:8080/mcp"
+  sse_url: "http://127.0.0.1:8081/sse"
+  # For HTTP, JWT is required by your server; set token via env CLINIC_JWT
+  # or put it here (not recommended to commit tokens).
+  token_env: "CLINIC_JWT"
+  CLINIC_JWT: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZW1vLXVzZXIiLCJyb2xlIjoiZGVtbyIsImlhdCI6MTc3MTMxODQ2NSwiZXhwIjoxNzcxNDA0ODY1fQ.IPdX8WEuESp441prjn7CrwOEWks-elaBX_zlj3w9tBA"
+
+demo:
+  # How many results to print for search lists
+  print_limit: 5
+
+user:
+  social_security_number: 123456789
+  first_name: "John"
+  last_name: "Doe"
+  address: "Main St 1"
+  email: "john@example.com"
+  phone_number: "+49123456"
+  membership_type: "regular"
+
+payment:
+  card_last_4: 4242
+  card_brand: "Visa"
+  card_exp: "12/30"
+  card_id: "tok_1"
+  initial_charge_amount: 10.0
+
+extra_payment_methods:
+  - card_last_4: 1111
+    card_brand: "MasterCard"
+    card_exp: "01/31"
+    card_id: "tok_2"
+
+search:
+  specialties_list: true
+  doctors:
+    specialty: "family"
+    min_rank: 4.0
+    max_fee: 300.0
+  appointments:
+    specialty: "family"
+    doctor_name: null
+    start_date: null
+    end_date: null
+
+booking:
+  # pick the first available slot from search_available_appointments
+  pick_slot_strategy: "first"  # first
+  # charge visit fee from slot or override:
+  payment_amount_from_slot_fee: true
+
+cancel:
+  enabled: true
