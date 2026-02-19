@@ -114,7 +114,7 @@ async def session_http(url: str, token: str) -> AsyncGenerator[ClientSession]:
 
 @asynccontextmanager
 async def session_sse(url: str) -> AsyncGenerator[ClientSession]:
-    # SSE demo has no JWT in your design
+    # IF SSE demo has no JWT in your design
     async with sse_client(url) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
