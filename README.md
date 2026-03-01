@@ -109,7 +109,7 @@ uv run pyright
 ## 1) Streamable HTTP (recommended)
 
 ```bash
-uv run python -m clinic_mcp_server.main run \
+uv run python -m clinic_mcp_server run \
   --transport streamable-http \
   --host 0.0.0.0 \
   --port 8080
@@ -119,7 +119,7 @@ uv run python -m clinic_mcp_server.main run \
 ## 2) SSE transport
 
 ```bash
-uv run python -m clinic_mcp_server.main run \
+uv run python -m clinic_mcp_server run \
   --transport sse \
   --host 0.0.0.0 \
   --port 8080
@@ -130,7 +130,7 @@ uv run python -m clinic_mcp_server.main run \
 ## 3) STDIO transport
 
 ```bash
-uv run python -m clinic_mcp_server.main run --transport stdio
+uv run python -m clinic_mcp_server run --transport stdio
 ```
 
 ---
