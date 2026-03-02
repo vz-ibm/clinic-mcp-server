@@ -1,5 +1,5 @@
 [project]
-name = "clinic-msp-server"
+name = "clinic-mcp-server"
 version = "0.0.1"
 description = "Clinic MCP server with tools for debugging and testing MCP clients"
 readme = "README.md"
@@ -18,9 +18,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "fastmcp>=2.0.0",
-    "pydantic>=2.0",
     "fastmcp>=2.14.5",
+    "pydantic>=2.0",
     "uvicorn>=0.41.0",
     # "websockets",
     "PyJWT>=2.8.0",

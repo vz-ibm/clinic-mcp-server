@@ -15,15 +15,16 @@ Supports **JWT authorization** for HTTP transports (configurable).
 
 ```
 src/clinic_mcp_server/
-  main.py                  # entrypoint (supports legacy flags + Typer)
-  cli/app.py               # Typer CLI
-  runtime/                 # runner + settings + MCP app factory
-  auth/                    # HS256 JWT + ASGI middleware
-  tools/clinic_server.py   # FastMCP tools
-  model/clinic_db.py       # SQLite database implementation
-  services/                # domain services
-  infra/                   # SQLite repository implementation
-  domain/                  # enums, errors, interfaces
+  __init__.py / __main__.py  # entry point
+  cli.py                     # Typer CLI (run / reset-db)
+  clinic/
+    clinic_service.py        # domain service
+    domain/                  # data types, repo Protocol, enums
+    sqlite/                  # SQLite repo + seed data
+  mcp/
+    clinic_server.py         # FastMCP tool definitions
+    auth/                    # JWT + ASGI middleware
+    runtime/                 # settings, runner, health endpoint
 tests/
   ...
 ```
