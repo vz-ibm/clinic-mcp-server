@@ -34,7 +34,6 @@ class RegisterUserResult:
 class ClinicService:
     def __init__(self, repo: ClinicRepository):
         self.repo = repo
-        
 
     # ----- Workflows -----
     def register_user(
@@ -50,11 +49,8 @@ class ClinicService:
         card_exp: str,
         card_id: str,
         amount: float,
-        membership_type: MembershipType
-,
+        membership_type: MembershipType,
     ) -> RegisterUserResult:
-       
-
         user_id = self.repo.add_user(
             social_security_number,
             first_name,

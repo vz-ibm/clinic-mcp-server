@@ -1,5 +1,5 @@
+from enum import StrEnum
 from pydantic import BaseModel, Field
-from .strenum import StrEnum
 
 class MembershipType(StrEnum):
     REGULAR = "regular"

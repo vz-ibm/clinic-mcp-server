@@ -334,5 +334,6 @@ def admin_reset_db() -> OkResult:
     repo.reset_database()
     return OkResult(ok=True)
 
+
 if __name__ == "__main__":
     mcp.run()

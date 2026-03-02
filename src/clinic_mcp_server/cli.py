@@ -38,6 +38,7 @@ def reset_db(
     typer.echo("✅ Database reset complete.")
     typer.echo(f"DB path: {p.resolve()}")
 
+
 @app.command()
 def run(
     transport: str = typer.Option("streamable-http"),
