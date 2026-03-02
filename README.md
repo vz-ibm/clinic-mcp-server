@@ -14,6 +14,7 @@ Supports **JWT authorization** for HTTP transports (configurable).
 ## Project Structure
 
 ```
+data/                        # database file. git ignored
 src/clinic_mcp_server/
   __init__.py / __main__.py  # entry point
   cli.py                     # Typer CLI (run / reset-db)
@@ -140,7 +141,7 @@ uv run python -m clinic_mcp_server run --transport stdio
 
 By default SQLite file is created under:
 ```
-storage/clinic.db
+data/clinic.db
 ```
 
 Override:
@@ -197,13 +198,13 @@ podman run --rm -p 8080:8080 \
   -e JWT_SECRET="dev-secret-change-me" \
   -e JWT_REQUIRED="true" \
   -e CLINIC_DB_PATH="/data/clinic.db" \
-  -v "$(pwd)/storage:/data" \
+  -v "$(pwd)/data:/data" \
   clinic-mcp-server:dev \
   uv run python -m clinic_mcp_server run --transport streamable-http --host 0.0.0.0 --port 8080
 ```
 
 ### Persistent DB volume
-The above mounts `./storage` from host into the container at `/data`, so the DB persists.
+The above mounts `./data` from host into the container at `/data`, so the DB persists.
 
 ---
 
@@ -213,7 +214,7 @@ The above mounts `./storage` from host into the container at `/data`, so the DB 
 podman run --rm -p 8080:8080 \
   -e JWT_REQUIRED="false" \
   -e CLINIC_DB_PATH="/data/clinic.db" \
-  -v "$(pwd)/storage:/data" \
+  -v "$(pwd)/data:/data" \
   clinic-mcp-server:dev \
   uv run python -m clinic_mcp_server run --transport sse --host 0.0.0.0 --port 8080
 ```

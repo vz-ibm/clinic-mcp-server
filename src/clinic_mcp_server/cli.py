@@ -4,11 +4,10 @@ from pathlib import Path
 
 import typer
 
-from clinic_mcp_server.mcp.clinic_server import DEFAULT_DB_PATH
+from clinic_mcp_server.clinic_server import DEFAULT_DB_PATH, mcp as clinic_mcp
 from clinic_mcp_server.clinic.sqlite.repo import SQLiteClinicRepository
 from clinic_mcp_server.mcp.runtime.runner import McpRunner
 from clinic_mcp_server.mcp.runtime.settings import ServerSettings
-from clinic_mcp_server.mcp.clinic_server import mcp as clinic_mcp
 
 app = typer.Typer(add_completion=False)
 

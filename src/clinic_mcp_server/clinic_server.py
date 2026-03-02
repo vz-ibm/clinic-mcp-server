@@ -19,7 +19,7 @@ from clinic_mcp_server.clinic.domain.data_types import (
 from clinic_mcp_server.clinic.clinic_service import ClinicService
 from clinic_mcp_server.clinic.sqlite import SQLiteClinicRepository
 
-DEFAULT_DB_PATH = "storage/clinic.db"
+DEFAULT_DB_PATH = "data/clinic.db"
 
 @lru_cache(maxsize=1)
 def get_service() -> ClinicService:

@@ -12,7 +12,7 @@ podman build -t clinic-mcp-server:dev .
 podman run --rm -p 8081:8081 \
   -e JWT_REQUIRED="true" \
   -e CLINIC_DB_PATH="/data/clinic.db" \
-  -v "$(pwd)/storage:/data" \
+  -v "$(pwd)/data:/data" \
   clinic-mcp-server:dev \
   uv run python -m clinic_mcp_server run \
     --transport sse \
