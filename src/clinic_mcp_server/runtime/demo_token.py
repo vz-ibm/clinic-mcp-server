@@ -66,6 +66,8 @@ def print_demo_token(settings: ServerSettings) -> None:
     # SSE: no JWT in this demo
     if transport == "sse":
         print(_banner("📡 MCP Server (SSE)"))
+        endpoint_path = getattr(settings, "sse_path", "/sse")
+        endpoint = f"{base}{endpoint_path}"
         print(endpoint)
         print("-" * 80)
         return
@@ -73,6 +75,8 @@ def print_demo_token(settings: ServerSettings) -> None:
     # Streamable HTTP: JWT demo
     if transport == "streamable-http":
         print(_banner("🌐 MCP Server (Streamable HTTP)"))
+        endpoint_path = getattr(settings, "mcp_path", "/mcp")
+        endpoint = f"{base}{endpoint_path}"
         print(endpoint)
         print("-" * 80)
         return

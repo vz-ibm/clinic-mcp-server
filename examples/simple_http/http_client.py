@@ -1,10 +1,11 @@
 import asyncio
+import os
 import httpx
 from mcp.client.streamable_http import streamable_http_client
 from mcp.client.session import ClientSession
 from mcp.types import ListToolsResult
 
-TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZW1vLXVzZXIiLCJyb2xlIjoiZGVtbyIsImlhdCI6MTc3MTQ5NzU0MiwiZXhwIjoxNzcxNTgzOTQyfQ.-G04-_llHc9l2xqldw-J0m03QoBLYwNGPLC9Y2UVS_E"  # your JWT
+TOKEN = os.environ["TOKEN"]
 URL = "http://127.0.0.1:8080/mcp"
 
 async def main():
