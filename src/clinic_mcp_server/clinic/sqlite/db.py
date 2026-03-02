@@ -1,70 +1,33 @@
+from __future__ import annotations
+
 import os
 import sqlite3
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
-from pydantic import BaseModel, Field
-
-from clinic_mcp_server.domain.enums import MembershipType
-
-
-class User(BaseModel):
-    user_id: str
-    ssn: int
-    first_name: str
-    last_name: str
-    address: str
-    email: str
-    phone: str
-    enter_date: str
-    membership_type: MembershipType
+from clinic_mcp_server.clinic.domain.data_types import (
+    AppointmentSlot,
+    DoctorSearchResult,
+    MembershipType,
+    PaymentMethod,
+    User,
+)
 
 
-class PaymentMethod(BaseModel):
-    pay_id: int = Field(..., description="Internal ID of the payment method.")
-    card_last_4: int = Field(..., description="Last 4 digits of the card number.")
-    card_brand: str = Field(..., description='Brand of the card (e.g., "Visa", "MasterCard").')
-    card_exp: str = Field(..., description="Expiration date in MM/YY format.")
-    card_id: str = Field(..., description="Unique identifier used to store the card securely.")
-
-
-class DoctorSearchResult(BaseModel):
-    dr_id: int = Field(..., description="Doctor's unique ID.")
-    dr_name: str = Field(..., description="Doctor's full name.")
-    specialty: str = Field(..., description="Medical specialty.")
-    rating: float = Field(..., description="Average patient rating.")
-    visit_fee: float = Field(..., description="Consultation fee.")
-    next_available_appointment: str | None = Field(
-        None, description="Next available appointment date and time, or None if unavailable."
-    )
-
-
-class AppointmentSlot(BaseModel):
-    slot_id: int = Field(..., description="Unique identifier of the slot.")
-    dr_name: str = Field(..., description="Doctor's name.")
-    specialty: str = Field(..., description="Doctor's specialty.")
-    date: str = Field(..., description="Date of the appointment (YYYY-MM-DD).")
-    start_time: str = Field(..., description="Start time of the appointment (HH:MM format).")
-    end_time: str = Field(..., description="End time of the appointment (HH:MM format).")
-    visit_fee: float = Field(..., description="Cost of the visit.")
-    rating: float = Field(..., description="Doctor's average rating.")
-
-
-class ClinicDB:
+class SQLiteClinicDB:
     def __init__(self, db_path: str):
-            self.db_path = db_path
+        self.db_path = db_path
 
-            directory = os.path.dirname(self.db_path)
-            if directory:
-                os.makedirs(directory, exist_ok=True)
+        directory = os.path.dirname(self.db_path)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
 
-            # Open connection (no schema side effects here)
-            self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
-            self.conn.row_factory = sqlite3.Row
-            self.cursor = self.conn.cursor()
+        # Open connection (no schema side effects here)
+        self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
+        self.conn.row_factory = sqlite3.Row
+        self.cursor = self.conn.cursor()
 
-            # Enforce FK constraints in SQLite (per-connection setting)
-            self.cursor.execute("PRAGMA foreign_keys = ON;")
-
+        # Enforce FK constraints in SQLite (per-connection setting)
+        self.cursor.execute("PRAGMA foreign_keys = ON;")
 
     def close(self) -> None:
         try:
@@ -72,12 +35,12 @@ class ClinicDB:
         except Exception:
             pass
 
-    def __enter__(self) -> "ClinicDB":
+    def __enter__(self) -> "SQLiteClinicDB":
         return self
 
     def __exit__(self, exc_type, exc, tb) -> None:
         self.close()
-    
+
     def init_schema(self, *, seed: bool = True) -> None:
         """
         Ensure schema exists. Safe to call multiple times.
@@ -87,7 +50,6 @@ class ClinicDB:
         if seed:
             self.seed_if_empty()
         self.conn.commit()
-
 
     def reset_schema(self, *, seed: bool = True) -> None:
         # drop in FK-safe order
@@ -103,19 +65,20 @@ class ClinicDB:
         self.create_tables()
         if seed:
             self.seed_if_empty()
-        self.conn.commit()  
+        self.conn.commit()
 
     def seed_if_empty(self) -> None:
         """
         Seed doctors + slots only if there are no doctors.
         Idempotent: calling multiple times won't duplicate data.
         """
+        from clinic_mcp_server.clinic.sqlite.populate import populate_repo  # local import avoids circular dependency
+
         self.cursor.execute("SELECT COUNT(*) AS c FROM doctors")
         if int(self.cursor.fetchone()["c"]) > 0:
             return
 
-        self.add_doctors()
-        self.add_slots()    
+        populate_repo(self)
 
     def create_tables(self):
         # Safer table creation order for FK relationships
@@ -200,79 +163,6 @@ class ClinicDB:
         else:
             print("Database file not found.")
 
-    def add_doctors(self):
-        doctors = [
-            ("Dr. Alice Green", 30, 150, "family", 4.7),
-            ("Dr. Bob Taylor", 20, 100, "family", 4.5),
-            ("Dr. Carol Smith", 25, 150, "family", 4.6),
-            ("Dr. David Lee", 30, 200, "family", 4.8),
-            ("Dr. Eva Clark", 20, 100, "family", 4.4),
-            ("Dr. Fiona White", 20, 200, "pediatrics", 4.9),
-            ("Dr. George Young", 30, 150, "pediatrics", 4.7),
-            ("Dr. Helen King", 25, 150, "pediatrics", 4.6),
-            ("Dr. Ian Black", 30, 200, "dermatology", 4.8),
-            ("Dr. Julia Adams", 20, 100, "dermatology", 4.5),
-        ]
-
-        default_schedule = [
-            (0, "09:00", "13:00"),  # Monday
-            (2, "09:00", "13:00"),  # Wednesday
-        ]
-
-        for doc in doctors:
-            self.cursor.execute(
-                "INSERT INTO doctors (dr_name, slot_visiting_time, visit_fee, specialty, rating) VALUES (?, ?, ?, ?, ?)",
-                doc,
-            )
-            dr_id = self.cursor.lastrowid
-
-            for weekday, start_time, end_time in default_schedule:
-                self.cursor.execute(
-                    "INSERT INTO doctor_opening_days (dr_id, weekday, start_time, end_time) VALUES (?, ?, ?, ?)",
-                    (dr_id, weekday, start_time, end_time),
-                )
-
-    def add_slots(self, days_range: int = 30, from_date: date | None = None):
-        if from_date is None:
-            from_date = datetime.today().date()
-
-        self.cursor.execute("""
-            SELECT d.dr_id, d.slot_visiting_time, od.weekday, od.start_time, od.end_time
-            FROM doctors d
-            JOIN doctor_opening_days od ON d.dr_id = od.dr_id
-        """)
-        schedule = self.cursor.fetchall()
-
-        for row in schedule:
-            dr_id = row["dr_id"]
-            slot_minutes = row["slot_visiting_time"]
-            weekday = row["weekday"]
-            start_str = row["start_time"]
-            end_str = row["end_time"]
-
-            for day_offset in range(days_range):
-                slot_date = from_date + timedelta(days=day_offset)
-                if slot_date.weekday() != weekday:
-                    continue
-
-                slot_duration = timedelta(minutes=slot_minutes)
-                start_dt = datetime.strptime(f"{slot_date} {start_str}", "%Y-%m-%d %H:%M")
-                end_dt = datetime.strptime(f"{slot_date} {end_str}", "%Y-%m-%d %H:%M")
-
-                while start_dt + slot_duration <= end_dt:
-                    self.cursor.execute("""
-                        INSERT INTO slots (dr_id, date, start_time, end_time)
-                        VALUES (?, ?, ?, ?)
-                    """, (
-                        dr_id,
-                        slot_date.isoformat(),
-                        start_dt.strftime("%H:%M"),
-                        (start_dt + slot_duration).strftime("%H:%M"),
-                    ))
-                    start_dt += slot_duration
-
-        self.conn.commit()
-
     def _require_lastrowid(self) -> int:
         rowid = self.cursor.lastrowid
         if rowid is None:
@@ -289,7 +179,7 @@ class ClinicDB:
         phone_number: str,
         membership_type: MembershipType = MembershipType.REGULAR,
     ) -> int:
-        if membership_type not in ["regular", "gold", "silver"]:
+        if not isinstance(membership_type, MembershipType):
             raise ValueError("Invalid membership_type. Choose from 'regular', 'gold', 'silver'.")
 
         today = date.today().isoformat()
@@ -607,3 +497,5 @@ class ClinicDB:
             visit_fee=float(r[6]),
             rating=float(r[7]),
         )
+
+# Made with Bob

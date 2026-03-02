@@ -2,20 +2,20 @@ from dataclasses import dataclass
 
 import pytest
 
-from clinic_mcp_server.domain.enums import MembershipType
-from clinic_mcp_server.domain.errors import (
+from clinic_mcp_server.clinic.domain.data_types import (
+    MembershipType,
     ConflictError,
     NotFoundError,
     ValidationError,
 )
-from clinic_mcp_server.domain.interfaces import ClinicRepository
-from clinic_mcp_server.model.clinic_db import (
+from clinic_mcp_server.clinic.domain.repo import ClinicRepository
+from clinic_mcp_server.clinic.domain.data_types import (
     AppointmentSlot,
     DoctorSearchResult,
     PaymentMethod,
     User,
 )
-from clinic_mcp_server.services.clinic_service import ClinicService
+from clinic_mcp_server.clinic.clinic_service import ClinicService
 
 
 @dataclass

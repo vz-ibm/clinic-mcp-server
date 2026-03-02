@@ -92,7 +92,7 @@ def require_int(x: Any, label: str) -> int:
 async def session_stdio() -> AsyncGenerator[ClientSession]:
     params = StdioServerParameters(
         command="uv",
-        args=["run", "python", "-m", "clinic_mcp_server.main", "--transport", "stdio"],
+        args=["run", "python", "-m", "clinic_mcp_server", "--transport", "stdio"],
     )
     async with stdio_client(params) as (read, write):
         async with ClientSession(read, write) as session:

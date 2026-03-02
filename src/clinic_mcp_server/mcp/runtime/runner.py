@@ -3,11 +3,11 @@ from __future__ import annotations
 import uvicorn
 from fastmcp import FastMCP
 
-from clinic_mcp_server.auth.jwt_hs256 import JwtHS256
-from clinic_mcp_server.auth.middleware import JwtAuthMiddleware
-from clinic_mcp_server.runtime.asgi_health import HealthMountApp
-from clinic_mcp_server.runtime.demo_token import print_demo_token
-from clinic_mcp_server.runtime.settings import ServerSettings
+from clinic_mcp_server.mcp.auth.jwt_hs256 import JwtHS256
+from clinic_mcp_server.mcp.auth.middleware import JwtAuthMiddleware
+from clinic_mcp_server.mcp.runtime.asgi_health import HealthMountApp
+from clinic_mcp_server.mcp.runtime.demo_token import print_demo_token
+from clinic_mcp_server.mcp.runtime.settings import ServerSettings
 from fastmcp.server.http import create_streamable_http_app
 
 class McpRunner:

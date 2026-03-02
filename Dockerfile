@@ -29,4 +29,4 @@ ENV CLINIC_DB_PATH=/data/clinic.db \
 RUN mkdir -p /data
 EXPOSE 8080
 
-CMD ["sh", "-c", "uv run python -m clinic_mcp_server.main run --transport ${TRANSPORT} --host ${HOST} --port ${PORT}"]
+CMD ["sh", "-c", "uv run python -m clinic_mcp_server run --transport ${TRANSPORT} --host ${HOST} --port ${PORT}"]

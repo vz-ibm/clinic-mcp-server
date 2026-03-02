@@ -1,9 +1,9 @@
-# src/clinic_mcp_server/auth/middleware.py
+# src/clinic_mcp_server/mcp/auth/middleware.py
 from __future__ import annotations
 
 from collections.abc import Iterable
 
-from clinic_mcp_server.auth.jwt_hs256 import JwtHS256
+from clinic_mcp_server.mcp.auth.jwt_hs256 import JwtHS256
 
 
 class JwtAuthMiddleware:

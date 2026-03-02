@@ -46,7 +46,7 @@ dev = [
 
 
 [project.scripts]
-clinic-mcp-server = "clinic_mcp_server.main:main"
+clinic-mcp-server = "clinic_mcp_server:main"
 
 [build-system]
 requires = ["hatchling"]

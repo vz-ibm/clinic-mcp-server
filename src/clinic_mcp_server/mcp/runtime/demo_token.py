@@ -1,8 +1,8 @@
-# src/clinic_mcp_server/runtime/demo_token.py
+# src/clinic_mcp_server/mcp/runtime/demo_token.py
 from __future__ import annotations
 
-from clinic_mcp_server.auth.jwt_hs256 import JwtHS256
-from clinic_mcp_server.runtime.settings import ServerSettings
+from clinic_mcp_server.mcp.auth.jwt_hs256 import JwtHS256
+from clinic_mcp_server.mcp.runtime.settings import ServerSettings
 
 
 def _client_host(host: str) -> str:

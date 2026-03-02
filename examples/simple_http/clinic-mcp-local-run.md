@@ -14,7 +14,7 @@ podman run --rm -p 8080:8080 \
   -e CLINIC_DB_PATH="/data/clinic.db" \
   -v "$(pwd)/storage:/data" \
   clinic-mcp-server:dev \
-  uv run python -m clinic_mcp_server.main run \
+  uv run python -m clinic_mcp_server run \
     --transport streamable-http \
     --host 0.0.0.0 \
     --port 8080

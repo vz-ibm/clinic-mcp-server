@@ -1,6 +1,6 @@
 import pytest
 
-from clinic_mcp_server.auth.jwt_hs256 import JwtHS256
+from clinic_mcp_server.mcp.auth.jwt_hs256 import JwtHS256
 
 
 def test_generate_and_verify_success():

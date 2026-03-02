@@ -10,7 +10,7 @@ DEFAULT_SSE_PATH="sse"
 JWT_SECRET_DEFAULT="secret"
 export JWT_SECRET="${JWT_SECRET:-$JWT_SECRET_DEFAULT}"
 export JWT_REQUIRED="true"
-export TOKEN="$(uv run python -c "from clinic_mcp_server.auth.jwt_hs256 import JwtHS256; print(JwtHS256('${JWT_SECRET}').generate_demo_token())")" 
+export TOKEN="$(uv run python -c "from clinic_mcp_server.mcp.auth.jwt_hs256 import JwtHS256; print(JwtHS256('${JWT_SECRET}').generate_demo_token())")"
 
 echo ""
 echo "===================================="
@@ -37,7 +37,7 @@ case "${choice}" in
     echo ">>> Starting Clinic MCP server (streamable-http)"
     echo "    URL:  http://${HOST}:${PORT}/${MCP_PATH}"
     echo ""
-    exec uv run python -m clinic_mcp_server.main run \
+    exec uv run python -m clinic_mcp_server run \
       --transport "${TRANSPORT}" \
       --host "${HOST}" \
       --port "${PORT}"
@@ -52,7 +52,7 @@ case "${choice}" in
     echo ">>> Starting Clinic MCP server (sse)"
     echo "    URL:  http://${HOST}:${PORT}/${SSE_PATH}"
     echo ""
-    exec uv run python -m clinic_mcp_server.main run \
+    exec uv run python -m clinic_mcp_server run \
       --transport "${TRANSPORT}" \
       --host "${HOST}" \
       --port "${PORT}"
@@ -65,7 +65,7 @@ case "${choice}" in
     echo ">>> Starting Clinic MCP server (stdio)"
     echo "    JWT:  N/A"
     echo ""
-    exec uv run python -m clinic_mcp_server.main \
+    exec uv run python -m clinic_mcp_server \
       --transport "${TRANSPORT}"
     ;;
 

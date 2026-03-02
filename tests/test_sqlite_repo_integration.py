@@ -2,14 +2,14 @@ import sqlite3
 
 import pytest
 
-from clinic_mcp_server.domain.enums import MembershipType
-from clinic_mcp_server.domain.errors import (
+from clinic_mcp_server.clinic.domain.data_types import (
+    MembershipType,
     ConflictError,
     NotFoundError,
     ValidationError,
 )
-from clinic_mcp_server.infra.sqlite_repo import SQLiteClinicRepository
-from clinic_mcp_server.services.clinic_service import ClinicService
+from clinic_mcp_server.clinic.sqlite.repo import SQLiteClinicRepository
+from clinic_mcp_server.clinic.clinic_service import ClinicService
 
 
 @pytest.fixture()

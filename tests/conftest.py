@@ -17,7 +17,7 @@ from mcp.client.sse import sse_client
 from mcp.client.stdio import stdio_client
 from mcp.client.streamable_http import streamable_http_client
 
-from clinic_mcp_server.auth.jwt_hs256 import JwtHS256
+from clinic_mcp_server.mcp.auth.jwt_hs256 import JwtHS256
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
@@ -77,7 +77,7 @@ def stdio_session(tmp_path: Path):
                 "run",
                 "python",
                 "-m",
-                "clinic_mcp_server.main",
+                "clinic_mcp_server",
                 "run",
                 "--transport",
                 "stdio",
@@ -109,7 +109,7 @@ def http_server(tmp_path: Path):
             "run",
             "python",
             "-m",
-            "clinic_mcp_server.main",
+            "clinic_mcp_server",
             "run",
             "--transport",
             "streamable-http",
@@ -170,7 +170,7 @@ def sse_server(tmp_path: Path):
     env["JWT_REQUIRED"] = "false"
 
     proc = subprocess.Popen(
-        ["uv", "run", "python", "-m", "clinic_mcp_server.main", "run","--transport", "sse", "--host", host, "--port", str(port)],
+        ["uv", "run", "python", "-m", "clinic_mcp_server", "run","--transport", "sse", "--host", host, "--port", str(port)],
         env=env,
     )
 

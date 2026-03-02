@@ -4,8 +4,8 @@ import json
 
 import pytest
 
-from clinic_mcp_server.auth.jwt_hs256 import JwtHS256
-from clinic_mcp_server.auth.middleware import JwtAuthMiddleware
+from clinic_mcp_server.mcp.auth.jwt_hs256 import JwtHS256
+from clinic_mcp_server.mcp.auth.middleware import JwtAuthMiddleware
 
 
 class DummyApp:

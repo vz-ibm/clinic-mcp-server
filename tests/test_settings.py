@@ -1,5 +1,5 @@
 
-from clinic_mcp_server.runtime.settings import ServerSettings
+from clinic_mcp_server.mcp.runtime.settings import ServerSettings
 
 
 def test_settings_defaults_stdio(monkeypatch):
@@ -11,7 +11,7 @@ def test_settings_defaults_stdio(monkeypatch):
 
 def test_settings_defaults_http(monkeypatch):
     monkeypatch.delenv("JWT_REQUIRED", raising=False)
-    s = ServerSettings.load(transport="sse", host="0.0.0.0", port=8080)
+    s = ServerSettings.load(transport="streamable-http", host="0.0.0.0", port=8080)
     assert s.jwt_required is True  # default for HTTP
 
 

@@ -198,7 +198,7 @@ podman run --rm -p 8080:8080 \
   -e CLINIC_DB_PATH="/data/clinic.db" \
   -v "$(pwd)/storage:/data" \
   clinic-mcp-server:dev \
-  uv run python -m clinic_mcp_server.main run --transport streamable-http --host 0.0.0.0 --port 8080
+  uv run python -m clinic_mcp_server run --transport streamable-http --host 0.0.0.0 --port 8080
 ```
 
 ### Persistent DB volume
@@ -214,7 +214,7 @@ podman run --rm -p 8080:8080 \
   -e CLINIC_DB_PATH="/data/clinic.db" \
   -v "$(pwd)/storage:/data" \
   clinic-mcp-server:dev \
-  uv run python -m clinic_mcp_server.main run --transport sse --host 0.0.0.0 --port 8080
+  uv run python -m clinic_mcp_server run --transport sse --host 0.0.0.0 --port 8080
 ```
 
 ---
@@ -230,7 +230,7 @@ Typically stdio is used locally (not common in Docker)
 This means you invoked Typer without a command. Use one of:
 
 ```bash
-python -m clinic_mcp_server.main run --transport streamable-http ...
+python -m clinic_mcp_server run --transport streamable-http ...
 ```
 ---
 

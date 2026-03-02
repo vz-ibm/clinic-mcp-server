@@ -6,20 +6,20 @@ from typing import Annotated, Optional
 from fastmcp import FastMCP
 from pydantic import BaseModel, Field
 
-from clinic_mcp_server.domain.default_values import DEFAULT_DB_PATH
-from clinic_mcp_server.domain.enums import CardBrand, MembershipType
-from clinic_mcp_server.domain.errors import (
+from clinic_mcp_server.clinic.domain.data_types import CardBrand, MembershipType
+from clinic_mcp_server.clinic.domain.data_types import (
     ClinicError,
 )
-from clinic_mcp_server.infra.sqlite_repo import SQLiteClinicRepository
-from clinic_mcp_server.model.clinic_db import (
+from clinic_mcp_server.clinic.domain.data_types import (
     AppointmentSlot,
     DoctorSearchResult,
     PaymentMethod,
     User,
 )
-from clinic_mcp_server.services.clinic_service import ClinicService
+from clinic_mcp_server.clinic.clinic_service import ClinicService
+from clinic_mcp_server.clinic.sqlite import SQLiteClinicRepository
 
+DEFAULT_DB_PATH = "storage/clinic.db"
 
 @lru_cache(maxsize=1)
 def get_service() -> ClinicService:

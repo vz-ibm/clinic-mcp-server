@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from clinic_mcp_server.domain.enums import MembershipType
-from clinic_mcp_server.domain.errors import ValidationError
-from clinic_mcp_server.domain.interfaces import ClinicRepository
-from clinic_mcp_server.model.clinic_db import (
+from clinic_mcp_server.clinic.domain.data_types import MembershipType
+from clinic_mcp_server.clinic.domain.data_types import ValidationError
+from clinic_mcp_server.clinic.domain.repo import ClinicRepository
+from clinic_mcp_server.clinic.domain.data_types import (
     AppointmentSlot,
     DoctorSearchResult,
     PaymentMethod,

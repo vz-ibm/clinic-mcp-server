@@ -1,4 +1,4 @@
-from clinic_mcp_server.cli.app import app
+from clinic_mcp_server.cli import app
 
 
 def main() -> None:

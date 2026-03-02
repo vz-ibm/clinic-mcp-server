@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from clinic_mcp_server.domain.enums import MembershipType
-from clinic_mcp_server.model.clinic_db import (
+from .data_types import (
+    MembershipType,
     AppointmentSlot,
     DoctorSearchResult,
     PaymentMethod,

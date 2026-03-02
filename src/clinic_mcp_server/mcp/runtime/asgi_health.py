@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any, Awaitable, Callable, Dict
 
-from clinic_mcp_server.runtime.settings import ServerSettings
+from clinic_mcp_server.mcp.runtime.settings import ServerSettings
 
 ASGIApp = Callable[
     [Dict[str, Any], Callable[[], Awaitable[Dict[str, Any]]], Callable[[Dict[str, Any]], Awaitable[None]]],

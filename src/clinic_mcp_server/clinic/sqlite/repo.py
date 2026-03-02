@@ -3,20 +3,14 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from clinic_mcp_server.domain.enums import MembershipType
-from clinic_mcp_server.domain.errors import (
+from clinic_mcp_server.clinic.domain.data_types import AppointmentSlot, DoctorSearchResult, MembershipType, PaymentMethod, User
+from clinic_mcp_server.clinic.domain.data_types import (
     ConflictError,
     NotFoundError,
     ValidationError,
 )
-from clinic_mcp_server.domain.interfaces import ClinicRepository
-from clinic_mcp_server.model.clinic_db import (
-    AppointmentSlot,
-    ClinicDB,
-    DoctorSearchResult,
-    PaymentMethod,
-    User,
-)
+from clinic_mcp_server.clinic.domain.repo import ClinicRepository
+from .db import SQLiteClinicDB
 
 
 class SQLiteClinicRepository(ClinicRepository):
@@ -24,12 +18,12 @@ class SQLiteClinicRepository(ClinicRepository):
         self._db_path = db_path
 
     def init_schema(self) -> None:
-        with ClinicDB(self._db_path) as db:
+        with SQLiteClinicDB(self._db_path) as db:
             db.init_schema(seed=True)
 
-    def _db(self) -> ClinicDB:
-        return ClinicDB(self._db_path)
-    
+    def _db(self) -> SQLiteClinicDB:
+        return SQLiteClinicDB(self._db_path)
+
 
     def hard_reset_database(self) -> None:
         """
@@ -50,9 +44,8 @@ class SQLiteClinicRepository(ClinicRepository):
 
 
     def reset_database(self, *, seed: bool = True) -> None:
-        with ClinicDB(self._db_path) as db:
-            db.reset_schema(seed=seed)    
-
+        with SQLiteClinicDB(self._db_path) as db:
+            db.reset_schema(seed=seed)
 
 
     # ---- Users ----
@@ -149,3 +142,5 @@ class SQLiteClinicRepository(ClinicRepository):
     def get_user_appointments(self, user_id: int) -> list[AppointmentSlot]:
         with self._db() as db:
             return db.get_user_appointments(user_id)
+
+# Made with Bob
