@@ -8,7 +8,6 @@ from clinic_mcp_server.mcp.auth.middleware import JwtAuthMiddleware
 from clinic_mcp_server.mcp.runtime.asgi_health import HealthMountApp
 from clinic_mcp_server.mcp.runtime.demo_token import print_demo_token
 from clinic_mcp_server.mcp.runtime.settings import ServerSettings
-from fastmcp.server.http import create_streamable_http_app
 
 class McpRunner:
     def __init__(self, mcp: FastMCP):

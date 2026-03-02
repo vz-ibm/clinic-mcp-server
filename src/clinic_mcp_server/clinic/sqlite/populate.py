@@ -8,9 +8,10 @@ if TYPE_CHECKING:
 
 
 def populate_repo(db: SQLiteClinicDB) -> None:
-    """Seed doctors, their schedules, and appointment slots into the database."""
+    """Seed doctors, their schedules, appointment slots, and demo users into the database."""
     _add_doctors(db)
     _add_slots(db)
+    _add_users(db)
     db.conn.commit()
 
 
@@ -85,5 +86,52 @@ def _add_slots(db: SQLiteClinicDB, days_range: int = 30, from_date: date | None 
                     (start_dt + slot_duration).strftime("%H:%M"),
                 ))
                 start_dt += slot_duration
+
+def _add_users(db: SQLiteClinicDB) -> None:
+    """Seed a small set of demo users with payment methods and an initial membership bill."""
+    today = date.today().isoformat()
+
+    users = [
+        # (ssn, first_name, last_name, address, email, phone, membership_type)
+        (100000001, "Alice", "Johnson", "12 Oak Street, Springfield", "alice.johnson@example.com", "+1-555-0101", "regular"),
+        (100000002, "Bob", "Martinez", "34 Maple Ave, Shelbyville", "bob.martinez@example.com", "+1-555-0102", "silver"),
+        (100000003, "Carol", "Williams", "56 Pine Road, Capital City", "carol.williams@example.com", "+1-555-0103", "gold"),
+    ]
+
+    payment_methods = [
+        # (card_last_4, card_brand, card_exp, card_id, amount)
+        (4242, "visa",       "12/28", "tok_alice_visa",   50.0),
+        (5555, "mastercard", "06/27", "tok_bob_mc",       75.0),
+        (3782, "amex",       "09/29", "tok_carol_amex",  100.0),
+    ]
+
+    for (ssn, first, last, address, email, phone, membership), (last4, brand, exp, card_id, amount) in zip(users, payment_methods):
+        db.cursor.execute(
+            """
+            INSERT INTO users (social_security_number, first_name, last_name, address, email, phone, enter_date, membership_type)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (ssn, first, last, address, email, phone, today, membership),
+        )
+        user_id = db.cursor.lastrowid
+
+        db.cursor.execute(
+            """
+            INSERT INTO payment_methods (user_id, card_last_4, card_brand, card_exp, card_id)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (user_id, last4, brand, exp, card_id),
+        )
+        pay_id = db.cursor.lastrowid
+
+        # initial membership bill
+        db.cursor.execute(
+            """
+            INSERT INTO bills (pay_id, date, amount)
+            VALUES (?, ?, ?)
+            """,
+            (pay_id, datetime.now().isoformat(timespec="seconds"), amount),
+        )
+
 
 # Made with Bob

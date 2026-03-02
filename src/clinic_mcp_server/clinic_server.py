@@ -30,7 +30,7 @@ def get_service() -> ClinicService:
 
 
 mcp = FastMCP()
-
+get_service() # initialize the db
 
 class AddUserResult(BaseModel):
     """Result of creating a user."""
